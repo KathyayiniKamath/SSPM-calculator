@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSPM Calculator</title>
+  <style>
+    /* Add some basic styling for the form */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    form {
+      margin: 20px auto;
+      max-width: 400px;
+      padding: 10px;
+      border: 1px solid #312d2d;
+      background-color: #534c4c;
+      border-radius: 5px;
+      color: aliceblue;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+    <h1><b><u>SSPM CALCULATOR</u></b></h1>
+  <form id="sspmForm">
+    <label for="w">Enter wavelength(nm):</label>
+    <input type="text" id="w" name="w" required>
+
+    <label for="n0">Enter n0:</label>
+    <input type="text" id="n0" name="n0" required>
+    <label for="l">Enter pathlength(m)</label>
+    <input type="text" id="l" name="l" required>
+    <label for="slope">Enter slope(only value)(m)</label>
+    <input type="text" id="slope" name="slope" required>
+    <label for="slope">Enter 10^ of slope</label>
+    <input type="text" id="pow" name="pow" required>
+
+    <button type="button" onclick="calculateSSPM()">Calculate</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    function calculateSSPM() {
+      // Get input values in scientific notation
+      const w1 = parseFloat(document.getElementById("w").value);
+      const n01 = parseFloat(document.getElementById("n0").value);
+      const l1 = parseFloat(document.getElementById("l").value);
+      const slope1 = parseFloat(document.getElementById("slope").value);
+       const power=parseFloat(document.getElementById("pow").value)
+      // Check if the input values are valid numbers
+      if (isNaN(w1) || isNaN(n01) || isNaN(l1) || isNaN(slope1)) {
+        alert("Please enter valid numbers in scientific notation.");
+        return;
+      }
+
+      // Perform calculations
+      const nSquared = ((w1*10**-9 * slope1*10**power) / (2 * n01 * l1));
+      const chi3 = (nSquared * n01 * n01 * 3 * 10 ** 8) *10**-1/ (12 * Math.PI * Math.PI);
+      const n2 = Math.log10(nSquared); // Displaying n2 with 2 decimal places
+      const kai3 = Math.log10(chi3); // Calculating the log base 10 of chi3
+
+      // Display results
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `n2: ${nSquared}(10^${n2}), chi3: ${(chi3.toExponential(4))}(10^${kai3})`;
+    }
+  </script>
+</body>
+</html>
