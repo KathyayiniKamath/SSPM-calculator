@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SSPM Calculator</title>
   <style>
     /* Add some basic styling for the form */
@@ -74,13 +75,14 @@
 
       // Perform calculations
       const nSquared = ((w1*10**-9 * slope1*10**power) / (2 * n01 * l1));
+      const nSquared1=nSquared.toExponential(4)
       const chi3 = (nSquared * n01 * n01 * 3 * 10 ** 8) *10**-1/ (12 * Math.PI * Math.PI);
-      const n2 = Math.log10(nSquared); // Displaying n2 with 2 decimal places
-      const kai3 = Math.log10(chi3); // Calculating the log base 10 of chi3
+      //const n2 = Math.log10(nSquared); // Displaying n2 with 2 decimal places
+      const kai3 =chi3.toExponential(4); // Calculating the log base 10 of chi3
 
       // Display results
       const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `n2: ${nSquared}(10^${n2}), chi3: ${(chi3.toExponential(4))}(10^${kai3})`;
+      resultDiv.innerHTML = `n2: ${nSquared1.replace(/e\+?/, ' x 10^')} m2/w,   kai3: ${kai3.replace(/e\+?/, ' x 10^')} esu`;
     }
   </script>
 </body>
