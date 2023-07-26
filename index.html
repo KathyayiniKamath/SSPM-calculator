@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SSPM</title>
   <style>
-    header {
+    h1 {
         background-color:rgb(66, 62, 62);
         color:white;
         padding: 20px;
         margin-right:200;  
+        text-align: center;
     }
     header h1 {      
         margin: 0;
@@ -26,18 +27,15 @@
     header h1 {      
         margin: 0;
     }
-    nav ul {
-        list-style-type: none;
-        padding: 0;
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
     }
-    
-    nav ul li {
-        display: inline-table;
-        margin-right: 10px;
-    }
-    nav ul li a {
-        color: white;
-        text-decoration: none;
+    #a{
+        align-items: center;
+        margin-top: 20px;
+        margin-right: 50px;
+        margin-left: 100px;
     }
     
   </style>
@@ -45,16 +43,10 @@
 <body>
   <header>
     <h1>SSPM CALCULATIONS</h1>
+   <a href="./calci.html"> <img id=a src="data:image/png;base64,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" height="200"></a>
+   <a href="./graph2.html"><img  id=a src="data:image/png;base64,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" ></a>
     
-    <nav>
-        <ul>
-            
-            <li><b><a href="./calci.html">Calculation of kai3 and n2 </a></b></li>
-            <br>
-            <br>
-            <br>
-            <li><b><a href="./graph2.html">Finding the slope of the graph</a></b></li>
-        </ul>
-    </nav>
   
   </header>
+</body>
+</html>

@@ -6,10 +6,14 @@
     <title>Graph Plotter and Curve Fitting</title>
     <style>
         /* Add some basic styling (optional) */
-        body {
+       /* body {
             font-family: Arial, sans-serif;
             margin: 0 auto;
             padding: 20px;
+        }*/
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
         }
         canvas {
             border: 1px solid #ccc;
@@ -25,6 +29,7 @@
             border-radius: 10px;
             cursor: pointer;
         }
+        
         h1 {
             background-color: rgb(64, 61, 61);
             color: aliceblue;
@@ -34,18 +39,18 @@
     </style>
 </head>
 <body>
-    <div id="head">
+    
         <h1>Graph Plotter and Curve Fitting</h1>
-    </div>
+    
     <br>
     <br>
     <form id="inputForm">
-        <label for="xValues">Enter X values (comma-separated):</label>
+        <label for="xValues"><b>Enter X values (comma-separated):</b></label>
         <input type="text" id="xValues" required>
         <br>
         <br>
         <br>
-        <label for="yValues">Enter Y values (comma-separated):</label>
+        <label for="yValues"><b>Enter Y values (comma-separated):</b></label>
         <input type="text" id="yValues" required>
         
         <!--<label for="equation">Enter Equation (e.g., 2*x + 3*y):</label>
