@@ -6,7 +6,7 @@
   <style>
     /* Add some basic styling for the form */
     h1 {
-      background-color: rgb(64, 61, 61);
+      
       color: aliceblue;
       padding: 20px;
       margin: right 100%;
@@ -14,6 +14,13 @@
     body {
       font-family: Arial, sans-serif;
       text-align: center;
+      background-image: url("calcibck.jpg");
+        background-attachment: fixed;
+        background-size: cover;
+         background-position:  center;
+        background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
     }
     form {
       margin: 20px auto;
@@ -23,6 +30,7 @@
       background-color: #534c4c;
       border-radius: 5px;
       color: aliceblue;
+      
     }
     input {
       width: 100%;
@@ -42,37 +50,100 @@
     #result {
       margin-top: 20px;
       font-weight: bold;
+      color:black;
+      display: grid;
+      font-size: large;
+      
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /*background-color:white; /* Semi-transparent background */
+      z-index: 9999; /* Ensure it's above other elements */
+      justify-content: center;
+      align-items: center;
+      
+    }
+    .popup-content {
+      max-width: 800px;
+      padding: 50px;
+      background-color:white;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    .popup-close {
+      cursor: pointer;
+      font-weight: bold;
+      float: right;
+    }
+    @media(max-width:500){
+      html, body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+  }    
+  form{
+    margin-top:200px;
+  }
     }
   </style>
 </head>
 <body>
+  <div class="container">
     <h1><b>SSPM CALCULATOR</b></h1>
+    
   <form id="sspmForm">
     <label for="w">Enter wavelength(nm):</label>
     <input type="text" id="w" name="w" required>
 
     <label for="n0">Enter n0:</label>
-    <input type="text" id="n0" name="n0" required>
+    <input type="number" id="n0" name="n0" required>
     <label for="l">Enter pathlength(m)</label>
-    <input type="text" id="l" name="l" required>
-    <label for="slope">Enter slope(only value)(m)</label>
-    <input type="text" id="slope" name="slope" required>
-    <label for="slope">Enter 10^ of slope</label>
-    <input type="text" id="pow" name="pow" required>
-
+    <input type="number" id="l" name="l" required>
+    <label for="slope">Enter ring number</label>
+    <input type="number" id="slope" name="slope" required>
+    <label for="slope">Enter intensity of laser(MW)</label>
+    <input type="number" id="int" name="in" required>
+  
     <button type="button" onclick="calculateSSPM()">Calculate</button>
   </form>
-
-  <div id="result"></div>
+</div>
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <span class="popup-close" onclick="hidePopup()">X</span>
+      <div id="result"></div>
 
   <script>
+    function showPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "flex";
+    }
+    function hidePopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "none";
+    }
+
     function calculateSSPM() {
       // Get input values in scientific notation
       const w1 = parseFloat(document.getElementById("w").value);
       const n01 = parseFloat(document.getElementById("n0").value);
       const l1 = parseFloat(document.getElementById("l").value);
-      const slope1 = parseFloat(document.getElementById("slope").value);
-       const power=parseFloat(document.getElementById("pow").value)
+      const n = parseFloat(document.getElementById("slope").value);
+      const int = parseFloat(document.getElementById("int").value);
+      const slope1=n/(int*10**6);
+       //const power=parseFloat(document.getElementById("pow").value)
       // Check if the input values are valid numbers
       if (isNaN(w1) || isNaN(n01) || isNaN(l1) || isNaN(slope1)) {
         alert("Please enter valid numbers in scientific notation.");
@@ -80,15 +151,20 @@
       }
 
       // Perform calculations
-      const nSquared = ((w1*10**-9 * slope1*10**power) / (2 * n01 * l1));
+      const nSquared = ((w1*10**-9 ) / (2 * n01 * l1))*slope1;
       const nSquared1=nSquared.toExponential(4)
-      const chi3 = (nSquared * n01 * n01 * 3 * 10 ** 8) *10**-1/ (12 * Math.PI * Math.PI);
+      const chi3 = (nSquared * n01 * n01 * 3 * 10 ** 8) *10**-3/ (12 * Math.PI * Math.PI);
       //const n2 = Math.log10(nSquared); // Displaying n2 with 2 decimal places
       const kai3 =chi3.toExponential(4); // Calculating the log base 10 of chi3
-
+     
       // Display results
       const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `n2: ${nSquared1.replace(/e\+?/, ' x 10^')} m2/w,   kai3: ${kai3.replace(/e\+?/, ' x 10^')} esu`;
+      resultDiv.style.whiteSpace = 'pre-line';
+      resultDiv.style.whiteSpace = 'pre-line';
+      resultDiv.textContent = `n2: ${nSquared1.replace(/e\+?/, ' x 10^')} m2/w,
+       kai3: ${kai3.replace(/e\+?/, ' x 10^')} esu`;
+      showPopup();
+      
     }
   </script>
 </body>

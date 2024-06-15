@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Plotter and Curve Fitting</title>
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('https://img.freepik.com/premium-vector/abstract-financial-chart-with-line-chart-uptrend-stock-market_546559-1784.jpg?size=626&ext=jpg&ga=GA1.1.1264552444.1684862609&semt=ais');
+            background-attachment: fixed;
+            background-size: cover;
+             background-position: center center;
+            background-repeat: no-repeat;
+           
+       }
+       .halfcircle{
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(to right, red 50%, transparent 50%);
+        border-radius: 50% 0 0 50%;
+        position: relative;
+      }
+      
+  form {
+    max-width:500px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color:rgb(146, 221, 221);
+    text-align: left;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left;
+    color: rgb(4, 57, 44);
+    
+  }
+  
+  input,
+  textarea {
+    width: 95%;
+    padding: 10px;
+    margin-bottom: 2px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 100px;
+  }
+  
+  button {
+    padding: 20px 30px;
+    background-color:rgb(12, 59, 67);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin-left: 200px;
+            margin-right: 200px;
+            background-color:white;
+        }
+       /* button {
+            width: 20%;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }*/
+        
+        h1 {
+            
+            color: rgb(45, 88, 90);
+            padding: 20px;
+        }
+        /*#inputForm{
+            text-align: left;
+            margin-left:20px ;
+
+        }*/
+        #button{
+            display:flex ;
+            margin-left: 5px;
+        }
+        #savegraph{
+            margin-left: 10px;
+        }
+        canvas.chartjs-render-monitor.custom-point-style {
+            border-radius: 0; /* Remove border-radius for square/rectangle points */
+        }
+        #updateForm {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            background-color: rgb(146, 221, 221);
+            text-align: left;
+            display: none; /* Hide the form initially */
+        }
+        #updateForm label {
+          display: block;
+          margin-bottom: 5px;
+          font-weight: bold;
+          text-align: left;
+          color: rgb(4, 57, 44);
+      }
+      #updateButton {
+        width: 50%;
+        padding: 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto;
+      }
+      .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /*background-color:white; /* Semi-transparent background */
+      z-index: 9999; /* Ensure it's above other elements */
+      justify-content: center;
+      align-items: center;
+      
+    }
+    .popup-content {
+      max-width: 800px;
+      padding: 50px;
+      background-color:white;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    .iframe-container {
+        width: 500px; /* Change this value to your desired width */
+        overflow: hidden; /* Hide any overflowing content */
+        align-items:left;
+      }
+    
+      /* Style to make the iframe responsive */
+      
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.0/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/regression"></script>
+    <!-- Include Chart.js DataLabels plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+<body>
+    <h1>Graph Plotter and Curve Fitting</h1>
+    <br>
+   
+   
+    <form id="inputForm">
+        <label for="xLabel"><b>Enter X-axis Label:</b></label>
+        <input type="text" id="xLabel" required>
+        <br>
+        <br>
+        <br>
+        <label for="yLabel"><b>Enter Y-axis Label:</b></label>
+        <input type="text" id="yLabel" required>
+        <br>
+        <br>
+        <br>
+        <label for="xValues"><b>Enter X values (comma-separated):</b></label>
+        <input type="text" id="xValues" required>
+        <br>
+        <br>
+        <br>
+        <label for="yValues"><b>Enter Y values (comma-separated):</b></label>
+        <input type="text" id="yValues" required>
+        <br>
+        <br>
+        <br>
+        <label for="lineThickness"><b>Enter Line Thickness (1 to 10):</b></label>
+        <input type="number" id="lineThickness" min="1" max="10" value="2" required>
+        <br>
+        <br>
+        <br>
+        <!-- ... (existing HTML code) ... -->
+
+<label for="lineColor"><b>Select Line Color:</b></label>
+<input type="color" id="lineColor" value="#ff0000" required>
+<br>
+<br>
+<br>
+<label for="pointShape"><b>Select Point Shape:</b></label>
+<select id="pointShape" required>
+    <option value="halfCircle">Half Circle</option>
+    <option value="circle">Circle</option>
+    <option value="halfTriangle">Half Triangle</option>
+    <option value="triangle">Triangle</option>
+    <option value="halfRect">Half Rectangle</option>
+    <option value="rect">Square/Rectangle</option>
+</select>
+<br>
+<br>
+<br>
+</select>
+
+<label for="PointColor"><b>Select Point Color:</b></label>
+<input type="color" id="PointColor" value="#ff0000" required>
+<br>
+<br>
+<br>
+<label for="lineType"><b>Select Line Type:</b></label>
+<select id="lineType" required>
+    <option value="line">Solid Line</option>
+    <option value="dash">Dashed Line</option>
+    <option value="dot">Dotted Line</option>
+</select>
+<br>
+<br>
+<br>
+        <div id="button">
+        <button type="submit"><b>Plot Graph</b></button>
+        <br>
+        <br>
+        <br>
+        <button type="button" id="saveGraph"><b>Save Graph as Image</b></button>
+        <br>
+        <br>
+        <br>
+    </div>
+        <p id="fitResult"></p>
+        <div id="equationResult"></div>
+    </form>
+    <div id="dataPoints">
+        <h2>Data Points</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                </tr>
+            </thead>
+            <tbody id="dataPointsTableBody">
+            </tbody>
+        </table>
+    </div>
+    <canvas id="graphCanvas"></canvas>
+
+    <script>
+        
+ // Custom point rendering function for half-circle points
+        
+        
+        
+                // Custom point rendering function for half-circle points
+                function renderHalfFilledCircle(ctx, options, x, y, radius, color) {
+                   ctx.beginPath();
+                    ctx.arc(x, y, radius, Math.PI, 2 * Math.PI); // Draw the half-circle from PI to 2*PI (180 degrees)
+                    ctx.strokeStyle = stcolor ; // Set the stroke color
+                   ctx.lineWidth = 2; // Adjust the stroke width if needed
+                    ctx.stroke();
+                    ctx.closePath();
+                   ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI); // Draw the other half of the circle from 0 to PI (180 degrees)
+                    ctx.fillStyle = color; // Set the fill color
+                   ctx.fill();
+                    ctx.closePath();
+                }
+        
+                function renderHalfFilledTriangle(ctx, options, x, y, radius, color) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - radius);
+                    ctx.lineTo(x + radius, y + radius);
+                    ctx.lineTo(x - radius, y + radius);
+                    ctx.closePath();
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                }
+        
+                function renderHalfFilledRect(ctx, options, x, y, radius, color) {
+                    ctx.beginPath();
+                    ctx.fillRect(x - radius, y, radius * 2, radius);
+                    ctx.closePath();
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                }
+        
+                // ... (existing code) ...
+            // Add this code to the receiving website where you want to receive the selected image
+window.addEventListener("message", function (event) {
+    if (event.origin === "https://www.senderwebsite.com") { // Change to the actual origin of the sending website
+      if (event.data.type === "selectedImage") {
+        const selectedImage = event.data.imageSrc;
+        
+        // Do something with the selected image, such as displaying it
+        const imageElement = document.createElement("img");
+        imageElement.src = selectedImage;
+        document.body.appendChild(imageElement);
+      }
+    }
+  });
+  
+        
+        
+    
+// Custom point rendering function for half-circle points
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dataPointsTableBody = document.getElementById('dataPointsTableBody');
+
+            
+            const inputForm = document.getElementById('inputForm');
+
+            inputForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const xValuesInput = document.getElementById('xValues');
+                const yValuesInput = document.getElementById('yValues');
+                const graphCanvas = document.getElementById('graphCanvas');
+                const fitResult = document.getElementById('fitResult');
+                const saveGraphBtn = document.getElementById('saveGraph');
+                const equationResult = document.getElementById('equationResult');
+                const xLabelInput = document.getElementById('xLabel');
+                const yLabelInput = document.getElementById('yLabel');
+                const lineThicknessInput = document.getElementById('lineThickness');
+                const lineColorInput = document.getElementById('lineColor'); 
+                const PointColorInput = document.getElementById('PointColor');
+                const xValues = xValuesInput.value.split(',').map(val => parseFloat(val.trim()));
+                const yValues = yValuesInput.value.split(',').map(val => parseFloat(val.trim()));
+                const lineThickness = parseInt(lineThicknessInput.value);
+                const pointShapeInput = document.getElementById('pointShape');
+                const lineTypeInput = document.getElementById('lineType'); // New line to get line type
+                if (xValues.length !== yValues.length) {
+                    alert('Number of X and Y values must be the same.');
+                    return;
+                }
+
+                const xLabel = xLabelInput.value;
+                const yLabel = yLabelInput.value;
+                const lineColor = lineColorInput.value;
+                const PointColor = PointColorInput.value;
+                const lineType = lineTypeInput.value;
+                const pointShape = pointShapeInput.value;
+                dataPointsTableBody.innerHTML = '';
+                for (let i = 0; i < xValues.length; i++) {
+                    const row = document.createElement('tr');
+                    const xCell = document.createElement('td');
+                    const yCell = document.createElement('td');
+                    xCell.textContent = xValues[i];
+                    yCell.textContent = yValues[i];
+                    row.appendChild(xCell);
+                    row.appendChild(yCell);
+                    dataPointsTableBody.appendChild(row);
+                }
+
+                graphCanvas.getContext('2d').clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+                fitResult.textContent = '';
+                equationResult.textContent = '';
+
+                const ctx = graphCanvas.getContext('2d');
+                
+                const chartData = {
+                    labels: xValues,
+                    datasets: [
+                        {
+                            label: yLabel,
+                            data: yValues,
+                           borderColor: 'blue',
+                            fill: false,
+                            borderWidth: 0,
+                            pointRadius: 5,
+                            pointcolor: PointColor,
+                            pointHoverRadius: 7,
+                            showLine:false,
+                            pointStyle: pointShape,
+                           pointBackgroundColor:PointColor
+                        },
+                        {
+                            label: 'Regression Line',
+                            data: [],
+                            borderColor: lineColor,
+                            borderWidth: lineThickness,
+                            borderDash:(lineType === 'dash') ? [5, 5] : (lineType === 'dot') ? [2, 2] : [],
+                            fill: false,
+                            pointRadius: 0,
+                        }
+                    ]
+                };
+                
+                
+                new Chart(ctx, {
+                   type: 'line',
+                    data: chartData,
+                    options: {
+                        
+                       scales: {
+                            x: {
+                                grid: {
+                                    display: false // Disable x-axis grid lines
+                                  },
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: xLabel
+                                  }
+                                
+                                
+                            },
+                            y: {
+                                grid: {
+                                    display: false // Disable x-axis grid lines
+                                  },
+                                type: 'linear',
+                               position: 'left',
+                               title: {
+                                display: true,
+                                text: yLabel
+                              }
+                               
+                           }
+                        },
+                        plugins: {
+                            datalabels: {
+                                display: true,
+                                align: 'top',
+                                formatter: function(value, context) {
+                                    const index = context.dataIndex;
+                                    const xValue = context.chart.data.labels[index];
+                                    const yValue = context.chart.data.datasets[0].data[index];
+                                    return `(${xValue}, ${yValue})`;
+                                }
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0,
+                                fill: false,
+                            },
+                        
+                        
+                            point: {
+                                pointStyle: (context) => {
+                                    const index = context.dataIndex;
+                                    
+              
+              
+                                    const pointShape = chartData.datasets[0].pointShape;
+                                    const x = context.x; // Retrieve x-coordinate
+              const y = context.y; // Retrieve y-coordinate
+              const radius = context.radius; // Retrieve point radius
+              const color = context.borderColor;
+              const stcolor=context.strokecolor
+                                    if (index % 2 === 0) {
+                                        return pointShape === 'circle'
+                                            ? 'circle'
+                                            : pointShape === 'triangle'
+                                            ? 'triangle'
+                                            : pointShape === 'rect'
+                                            ? 'rect'
+                                            : pointShape === 'halfcircle'
+                                            ? 'halfcircle'
+                                            : 'rect'; 
+                                        } else {
+                                            if (pointShape === 'halfCircle') {
+                                                renderHalfFilledCircle(ctx, context, x, y, radius, color);
+                                                
+                                            } else if (pointShape === 'halfTriangle') {
+                                                renderHalfFilledTriangle(ctx, context, x, y, radius, color);
+                                            } else if (pointShape === 'halfRect') {
+                                                renderHalfFilledRect(ctx, context, x, y, radius, color);
+                                            } else {
+                                                return 'rect';
+                                            }
+                                        }
+                                    },
+                                radius: 5, // Default point radius
+                                backgroundColor: PointColor,
+                                borderWidth: 1,
+                                borderColor: 'rgba(0, 0, 0, 0.8)',
+                                strokecolor:'white',
+                                draw: (context) => {
+                                    const index = context.dataIndex;
+                                    if (index % 2 !== 0 && chartData.datasets[0].pointShape === 'halfCircle') {
+                                        const x = context.x;
+                                        const y = context.y;
+                                        const radius = context.radius;
+                                        const color = context.borderColor;
+                                        renderHalfFilledCircle(ctx, context, x, y, radius, color);
+                                    } else if (index % 2 !== 0 && chartData.datasets[0].pointShape === 'halfTriangle') {
+                                        // Add code to render half-filled triangle points (similar to half-circle)
+                                    } else if (index % 2 !== 0 && chartData.datasets[0].pointShape === 'halfRect') {
+                                    }
+                                },
+                            },
+                        },
+                    },
+                            
+                
+            
+               });
+            
+            
+
+                saveGraphBtn.addEventListener('click', function () {
+                    
+                    const graphImage = graphCanvas.toDataURL();
+                    const link = document.createElement('a');
+                    link.href = graphImage;
+                    link.download = 'graph.png';
+                    link.click();
+                });
+
+                try {
+                    // Calculate the equation of the curve using curve fitting (polynomial regression)
+                    const sumXY = xValues.map((x, i) => x * yValues[i]).reduce((a, b) => a + b, 0);
+                    const sumX = xValues.reduce((a, b) => a + b, 0);
+                    const sumY = yValues.reduce((a, b) => a + b, 0);
+                    const sumX2 = xValues.map(x => x * x).reduce((a, b) => a + b, 0);
+                    const n = xValues.length;
+    
+                    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                    const intercept = (sumY - slope * sumX) / n;
+                    const equationStr = `Straight Line Fit: y = ${slope.toFixed(2)} * x + ${intercept.toFixed(2)}`;
+                    equationResult.textContent = `Curve Fitting Equation: ${equationStr}`;
+
+                    // Add regression line data to chartData
+                    chartData.datasets[1].data = xValues.map(x => slope * x + intercept);
+
+                    // Update the chart to display the regression line
+                    ctx.update();
+                } catch (error) {
+                    alert('Error performing curve fitting. Please check your input.');
+                    console.error(error);
+                }
+            });
+
+        });
+       
+    </script>
+</body>
+</html>

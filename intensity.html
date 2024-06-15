@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intensity at focus</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("bck.jpg");
+            background-position: center;
+            background-repeat: no-repeat ;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .container {
+            background-color:#534c4c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color:white;;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        input[type="number"] {
+            padding: 10px;
+            width: calc(100% - 22px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: rgb(11, 66, 11);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            color: white;
+            font-weight: bold;
+        }
+        label{
+            
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Finding Intensity at focus</h1>
+        <div class="input-group">
+            <label for="number1">Enter focal length:</label>
+            <input type="number" id="f" placeholder="Enter focal length">
+        </div>
+        <div class="input-group">
+            <label for="number2">Aperture size(mm):</label>
+            <input type="number" id="d" placeholder="Enter aperture size(mm)">
+        </div>
+        <div class="input-group">
+            <label for="number2">Wavelength of laser(nm):</label>
+            <input type="number" id="w" placeholder="Enter wavelength(nm)">
+        </div>
+        <div class="input-group">
+            <label for="number2">Power(mw):</label>
+            <input type="number" id="p" placeholder="Enter power(mw)">
+        </div>
+        <button onclick="addNumbers()">Calculate</button>
+        <p id="result"></p>
+    </div>
+    <script>
+        function addNumbers() {
+            const f = parseFloat(document.getElementById('f').value);
+            const d = parseFloat(document.getElementById('d').value);
+            const w=parseFloat(document.getElementById('w').value);
+            const p=parseFloat(document.getElementById('p').value);
+            const result = (2*w*10**-9*f*10**-2)/(3.14*d*10**-3);
+            const I=(2*p*10**-3)/(3.14*result*result);
+            const resultInExponential = I.toExponential(2);
+            const parts = resultInExponential.split('e');
+            const coefficient = parts[0];
+            const exponent = parts[1];
+
+            document.getElementById('result').innerHTML = `Result: ${coefficient} × 10<sup>${exponent}</sup> w/m2`;
+        }
+        
+    </script>
+</body>
+</html>
